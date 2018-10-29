@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>World Clock</title>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: #000;
+        }
+        
+        main {
+            width: 100%;
+        }
+        
+        h1,
+        h2 {
+            margin-bottom: 10px;
+            color: #fff;
+            text-align: center;
+            font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+            font-style: normal;
+            font-variant: normal;
+        }
+        
+        h1 {
+            margin-top: 30px;
+            font-size: 30px;
+            font-weight: 700;
+        }
+        
+        h2 {
+            font-size: 22px;
+            font-weight: 500;
+        }
+        
+        main div {
+            margin: 0 auto;
+        }
+        
+        .analog-clock {
+            width: 280px;
+            height: 280px;
+        }
+        
+        #clock-face {
+            stroke: black;
+            stroke-width: 2px;
+            fill: white;
+            border: 1px solid red;
+        }
+        
+        #h-hand,
+        #m-hand,
+        #s-hand,
+        #s-tail {
+            stroke-linecap: round;
+        }
+        
+        #h-hand,
+        #m-hand {
+            stroke: black;
+        }
+        
+        #s-hand,
+        #s-tail {
+            stroke: red;
+        }
+        
+        #h-hand {
+            stroke-width: 8px;
+        }
+        
+        #m-hand {
+            stroke-width: 4px;
+        }
+        
+        #s-hand {
+            stroke-width: 2px;
+        }
+        
+        .time-text {
+            text-align: center;
+        }
+        
+        #location-controls {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        button {
+            width: 140px;
+            height: 140px;
+            display: inline-block;
+            padding: 20px;
+            margin-right: 10px;
+            margin-left: 10px;
+            background-color: #fff;
+            border: 1px solid red;
+            border-radius: 50%;
+            color: #000;
+            text-align: center;
+            text-decoration: none;
+            font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>World Clock</h1>
+    </header>
+    <main>
+        <div id="london">
+            <h2 id="clock_location_header">London, UK</h2>
+            <div id="clock_inner" class="analog-clock">
+                <svg width="280" height="280">
+                    <circle id="clock-face" cx="140" cy="140" r="130" />
+                    <line id="h-hand" x1="140" y1="140" x2="140" y2="76" />
+                    <line id="m-hand" x1="140" y1="140" x2="140" y2="40" />
+                    <line id="s-hand" x1="140" y1="140" x2="140" y2="24" />
+                    <line id="s-tail" x1="140" y1="140" x2="140" y2="112" />
+                </svg>
+            </div>
+        </div>
+        <div id="location-controls">
+            <button type="button" id="lon">London,
+                <br>UK</button>
+            <button type="button" id="hou">Houston,
+                <br>USA</button>
+            <button type="button" id="tok">Tokyo,
+                <br>Japan</button>
+            <button type="button" id="seo">Seoul,
+                <br>S. Korea</button>
+            <button type="button" id="del">New Delhi,
+                <br>India</button>
+        </div>
+    </main>
+
+    <script>
+        function clock() {
+            //date, hours, minutes, seconds
+            var d, h, m, s;
+            d = new Date;
+
+            //timezone offsets
+            var utc_offset = d.getTimezoneOffset();
+            var london_offset = 0 * 60;
+            var houston_offset = -6 * 60;
+            var tokyo_offset = +9 * 60;
+            var seoul_offset = +8 * 60;
+            var delhi_offset = +5.5 * 60;
+
+            //set timezones
+            if (document.getElementById("clock_inner").parentNode.id == "london") {
+                d.setMinutes(d.getMinutes() + london_offset);
+            } else if (document.getElementById("clock_inner").parentNode.id == "houston") {
+                d.setMinutes(d.getMinutes() + houston_offset);
+            } else if (document.getElementById("clock_inner").parentNode.id == "tokyo") {
+                d.setMinutes(d.getMinutes() + tokyo_offset);
+            } else if (document.getElementById("clock_inner").parentNode.id == "seoul") {
+                d.setMinutes(d.getMinutes() + seoul_offset);
+            } else if (document.getElementById("clock_inner").parentNode.id == "delhi") {
+                d.setMinutes(d.getMinutes() + delhi_offset);
+            } else {
+                d.setMinutes(d.getMinutes() + utc_offset);
+            }
+
+            //set clock times
+            h = 30 * ((d.getHours() % 12) + d.getMinutes() / 60);
+            m = 6 * d.getMinutes();
+            s = 6 * d.getSeconds();
+
+            //move hands in time
+            setAttr('h-hand', h);
+            setAttr('m-hand', m);
+            setAttr('s-hand', s);
+            setAttr('s-tail', s + 180);
+
+            //call each second
+            setTimeout(clock, 1000);
+
+            //timezone header
+            var loc = document.getElementById("clock_location_header");
+            //timezone buttons
+            var lon = document.getElementById("lon");
+            var hou = document.getElementById("hou");
+            var tok = document.getElementById("tok");
+            var seo = document.getElementById("seo");
+            var del = document.getElementById("del");
+
+            //london button
+            lon.addEventListener("click", function() {
+                //change timezone id 
+                document.getElementById("clock_inner").parentNode.id = "london";
+                //update h2 location
+                loc.innerHTML = "London, UK";
+            });
+            //houston button
+            hou.addEventListener("click", function() {
+                //change timezone id 
+                document.getElementById("clock_inner").parentNode.id = "houston";
+                //update h2 location
+                loc.innerHTML = "Houston, USA";
+            });
+            //tokyo button 
+            tok.addEventListener("click", function() {
+                //change timezone id 
+                document.getElementById("clock_inner").parentNode.id = "tokyo";
+                //update h2 location
+                loc.innerHTML = "Tokyo, Japan";
+            });
+            //seoul button 
+            seo.addEventListener("click", function() {
+                //change timezone id 
+                document.getElementById("clock_inner").parentNode.id = "seoul";
+                //update h2 location
+                loc.innerHTML = "Seoul, South Korea";
+            });
+            //new delhi button
+            del.addEventListener("click", function() {
+                //change timezone id 
+                document.getElementById("clock_inner").parentNode.id = "delhi";
+                //update h2 location
+                loc.innerHTML = "New Delhi, India";
+            });
+        };
+
+        //rotate hands
+        function setAttr(id, val) {
+            var v = 'rotate(' + val + ', 140, 140)';
+            document.getElementById(id).setAttribute('transform', v);
+        };
+
+        window.onload = clock;
+    </script>
+
+</body>
+</html>
